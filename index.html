@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Aid Demo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Preference Modal -->
+  <div id="modal-overlay" class="modal-overlay active">
+    <div class="modal">
+      <h2 class="modal-title">Personalize Your Reading</h2>
+      <p class="modal-subtitle">Choose visual aids for dyslexia — effects can be combined</p>
+
+      <div class="toggle-group">
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-name">Bold Beginnings</span>
+            <span class="toggle-desc">Bold the first few letters of each sentence's opening word</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-bold">
+            <span class="track"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-name">Emotion Colors</span>
+            <span class="toggle-desc">Positive words in green, negative in red, surprise in purple</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-emotion">
+            <span class="track"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-name">Row Shading</span>
+            <span class="toggle-desc">Alternating row backgrounds to prevent line skipping</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-gradient">
+            <span class="track"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="toggle-info">
+            <span class="toggle-name">Logic Word Animation</span>
+            <span class="toggle-desc">Logical connectors gently pulse to highlight sentence structure</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-logic">
+            <span class="track"></span>
+          </label>
+        </div>
+      </div>
+
+      <button id="start-btn" class="start-btn">Start Reading</button>
+    </div>
+  </div>
+
+  <!-- App Layout -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-header">Reader</div>
+
+      <div class="sidebar-controls">
+        <div class="control-group">
+          <label class="control-label">Font</label>
+          <select id="font-family" class="font-select">
+            <option value="Georgia" selected>Georgia</option>
+            <option value="Arial">Arial</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Helvetica">Helvetica</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Size</label>
+          <div class="stepper">
+            <button id="font-size-dec" class="stepper-btn">−</button>
+            <span id="font-size-value" class="stepper-value">18px</span>
+            <button id="font-size-inc" class="stepper-btn">+</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Line Height</label>
+          <div class="stepper">
+            <button id="line-height-dec" class="stepper-btn">−</button>
+            <span id="line-height-value" class="stepper-value">1.8</span>
+            <button id="line-height-inc" class="stepper-btn">+</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Text Color</label>
+          <div class="color-control">
+            <input type="color" id="font-color" value="#2c2c2c">
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">Background</label>
+          <div class="color-control">
+            <input type="color" id="bg-color" value="#ffffff">
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="settings-btn" class="gear-btn" title="Reading Settings">⚙</button>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content-area">
+      <article id="article"></article>
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
