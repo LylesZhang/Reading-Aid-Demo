@@ -8,63 +8,6 @@
 </head>
 <body>
 
-  <!-- Preference Modal -->
-  <div id="modal-overlay" class="modal-overlay active">
-    <div class="modal">
-      <h2 class="modal-title">Personalize Your Reading</h2>
-      <p class="modal-subtitle">Choose visual aids for dyslexia — effects can be combined</p>
-
-      <div class="toggle-group">
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <span class="toggle-name">Bold Beginnings</span>
-            <span class="toggle-desc">Bold the first few letters of each sentence's opening word</span>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="toggle-bold">
-            <span class="track"></span>
-          </label>
-        </div>
-
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <span class="toggle-name">Emotion Colors</span>
-            <span class="toggle-desc">Positive words in green, negative in red, surprise in purple</span>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="toggle-emotion">
-            <span class="track"></span>
-          </label>
-        </div>
-
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <span class="toggle-name">Row Shading</span>
-            <span class="toggle-desc">Alternating row backgrounds to prevent line skipping</span>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="toggle-gradient">
-            <span class="track"></span>
-          </label>
-        </div>
-
-        <div class="toggle-row">
-          <div class="toggle-info">
-            <span class="toggle-name">Logic Word Animation</span>
-            <span class="toggle-desc">Logical connectors gently pulse to highlight sentence structure</span>
-          </div>
-          <label class="toggle-switch">
-            <input type="checkbox" id="toggle-logic">
-            <span class="track"></span>
-          </label>
-        </div>
-      </div>
-
-      <button id="start-btn" class="start-btn">Start Reading</button>
-    </div>
-  </div>
-
-  <!-- App Layout -->
   <div class="app-layout">
 
     <!-- Left Sidebar -->
@@ -72,10 +15,13 @@
       <div class="sidebar-header">Reader</div>
 
       <div class="sidebar-controls">
+
+        <!-- Typography -->
         <div class="control-group">
           <label class="control-label">Font</label>
           <select id="font-family" class="font-select">
-            <option value="Georgia" selected>Georgia</option>
+            <option value="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" selected>System Default</option>
+            <option value="Georgia">Georgia</option>
             <option value="Arial">Arial</option>
             <option value="Verdana">Verdana</option>
             <option value="Helvetica">Helvetica</option>
@@ -89,6 +35,7 @@
             <span id="font-size-value" class="stepper-value">18px</span>
             <button id="font-size-inc" class="stepper-btn">+</button>
           </div>
+          <input type="range" id="font-size-slider" min="14" max="28" step="1" value="18" class="slider">
         </div>
 
         <div class="control-group">
@@ -98,6 +45,7 @@
             <span id="line-height-value" class="stepper-value">1.8</span>
             <button id="line-height-inc" class="stepper-btn">+</button>
           </div>
+          <input type="range" id="line-height-slider" min="1.4" max="2.4" step="0.1" value="1.8" class="slider">
         </div>
 
         <div class="control-group">
@@ -113,11 +61,63 @@
             <input type="color" id="bg-color" value="#ffffff">
           </div>
         </div>
+
       </div>
 
-      <div class="sidebar-footer">
-        <button id="settings-btn" class="gear-btn" title="Reading Settings">⚙</button>
+      <!-- Reading Aids -->
+      <div class="sidebar-section-label">Reading Aids</div>
+
+      <div class="aid-toggle-group">
+
+        <div class="aid-toggle-row">
+          <label class="aid-toggle-switch">
+            <input type="checkbox" id="toggle-bold">
+            <span class="track"></span>
+          </label>
+          <span class="aid-toggle-label">Bold Beginnings</span>
+        </div>
+
+        <div class="aid-toggle-row">
+          <label class="aid-toggle-switch">
+            <input type="checkbox" id="toggle-emotion">
+            <span class="track"></span>
+          </label>
+          <span class="aid-toggle-label">Emotion Colors</span>
+        </div>
+
+        <div class="emotion-colors" id="emotion-colors">
+          <div class="emotion-color-row">
+            <span>Positive</span>
+            <input type="color" id="emotion-positive-color" value="#27ae60">
+          </div>
+          <div class="emotion-color-row">
+            <span>Negative</span>
+            <input type="color" id="emotion-negative-color" value="#e74c3c">
+          </div>
+          <div class="emotion-color-row">
+            <span>Surprise</span>
+            <input type="color" id="emotion-surprise-color" value="#8e44ad">
+          </div>
+        </div>
+
+        <div class="aid-toggle-row">
+          <label class="aid-toggle-switch">
+            <input type="checkbox" id="toggle-gradient">
+            <span class="track"></span>
+          </label>
+          <span class="aid-toggle-label">Row Shading</span>
+        </div>
+
+        <div class="aid-toggle-row">
+          <label class="aid-toggle-switch">
+            <input type="checkbox" id="toggle-logic">
+            <span class="track"></span>
+          </label>
+          <span class="aid-toggle-label">Logic Words</span>
+        </div>
+
       </div>
+
     </nav>
 
     <!-- Main Content -->

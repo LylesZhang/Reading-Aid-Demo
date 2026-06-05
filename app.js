@@ -39,10 +39,13 @@ const state = {
   gradientRows:  false,
   logicAnimation: false,
   fontSize:   18,
-  fontFamily: 'Georgia',
+  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   lineHeight: 1.8,
   fontColor:  '#2c2c2c',
-  bgColor:    '#ffffff'
+  bgColor:    '#ffffff',
+  emotionPositiveColor: '#27ae60',
+  emotionNegativeColor: '#e74c3c',
+  emotionSurpriseColor: '#8e44ad'
 };
 
 let logicWordCounter = 0;
@@ -58,7 +61,15 @@ function getEmotionClass(word) {
   return null;
 }
 
-function processWord(rawToken, isFirst) {
+// Bionic Reading fixation length: ~first half of the word
+function bionicN(len) {
+  if (len <= 3) return 1;
+  if (len <= 6) return 2;
+  if (len <= 9) return 3;
+  return 4;
+}
+
+function processWord(rawToken) {
   const clean = cleanWord(rawToken);
   if (!clean) return rawToken;
 
@@ -69,17 +80,28 @@ function processWord(rawToken, isFirst) {
 
   let innerHtml = body;
 
-  if (state.boldBeginning && isFirst) {
-    const N = Math.min(3, Math.ceil(body.length / 2));
-    innerHtml = `<b>${body.slice(0, N)}</b>${body.slice(N)}`;
+  // Bionic Reading: bold anchor → mid-weight fade → normal
+  if (state.boldBeginning) {
+    const N = bionicN(body.length);
+    const anchor = body.slice(0, N);
+    const rest   = body.slice(N);
+    if (rest.length <= 1) {
+      innerHtml = `<b>${anchor}</b>${rest}`;
+    } else {
+      const fade   = rest.slice(0, 1);
+      const normal = rest.slice(1);
+      innerHtml = `<b>${anchor}</b><span class="bionic-fade">${fade}</span>${normal}`;
+    }
   }
 
+  // Logic word animation
   if (state.logicAnimation && LOGIC_WORDS.has(clean)) {
     const delay = (logicWordCounter * 0.4).toFixed(1);
     logicWordCounter++;
     return `${leading}<span class="logic-word" style="animation-delay:${delay}s">${innerHtml}</span>${trailing}`;
   }
 
+  // Emotion color
   if (state.emotionColor) {
     const cls = getEmotionClass(clean);
     if (cls) {
@@ -92,16 +114,9 @@ function processWord(rawToken, isFirst) {
 
 function renderSentenceWords(sentence) {
   const tokens = sentence.split(/(\s+)/);
-  let wordCount = 0;
   let html = '';
-
   for (const token of tokens) {
-    if (/^\s+$/.test(token)) {
-      html += token;
-    } else {
-      html += processWord(token, wordCount === 0);
-      if (cleanWord(token)) wordCount++;
-    }
+    html += /^\s+$/.test(token) ? token : processWord(token);
   }
   return html;
 }
@@ -129,11 +144,13 @@ function render() {
   article.style.fontSize   = state.fontSize + 'px';
   article.style.lineHeight = state.lineHeight;
   article.style.color      = state.fontColor;
+  article.style.setProperty('--emotion-positive', state.emotionPositiveColor);
+  article.style.setProperty('--emotion-negative', state.emotionNegativeColor);
+  article.style.setProperty('--emotion-surprise', state.emotionSurpriseColor);
   document.querySelector('.content-area').style.background = state.bgColor;
 
   const paragraphs = ARTICLE_TEXT.trim().split(/\n\n+/);
   let html = '';
-
   paragraphs.forEach((para, i) => {
     if (i === 0) {
       html += `<h1 class="article-title">${para.trim()}</h1>`;
@@ -141,24 +158,18 @@ function render() {
       html += renderParagraph(para.trim());
     }
   });
-
   article.innerHTML = html;
 }
 
 function updateStepperDisplay() {
-  document.getElementById('font-size-value').textContent  = state.fontSize + 'px';
+  document.getElementById('font-size-value').textContent   = state.fontSize + 'px';
   document.getElementById('line-height-value').textContent = state.lineHeight.toFixed(1);
+  document.getElementById('font-size-slider').value        = state.fontSize;
+  document.getElementById('line-height-slider').value      = state.lineHeight;
 }
 
 function init() {
-  document.getElementById('start-btn').addEventListener('click', () => {
-    document.getElementById('modal-overlay').classList.remove('active');
-  });
-
-  document.getElementById('settings-btn').addEventListener('click', () => {
-    document.getElementById('modal-overlay').classList.add('active');
-  });
-
+  // Reading aid toggles
   document.getElementById('toggle-bold').addEventListener('change', e => {
     state.boldBeginning = e.target.checked;
     render();
@@ -166,6 +177,7 @@ function init() {
 
   document.getElementById('toggle-emotion').addEventListener('change', e => {
     state.emotionColor = e.target.checked;
+    document.getElementById('emotion-colors').classList.toggle('active', e.target.checked);
     render();
   });
 
@@ -179,27 +191,42 @@ function init() {
     render();
   });
 
+  // Emotion color pickers
+  document.getElementById('emotion-positive-color').addEventListener('input', e => {
+    state.emotionPositiveColor = e.target.value;
+    render();
+  });
+  document.getElementById('emotion-negative-color').addEventListener('input', e => {
+    state.emotionNegativeColor = e.target.value;
+    render();
+  });
+  document.getElementById('emotion-surprise-color').addEventListener('input', e => {
+    state.emotionSurpriseColor = e.target.value;
+    render();
+  });
+
+  // Font family
   document.getElementById('font-family').addEventListener('change', e => {
     state.fontFamily = e.target.value;
     render();
   });
 
+  // Font size — stepper
   document.getElementById('font-size-inc').addEventListener('click', () => {
-    if (state.fontSize < 28) {
-      state.fontSize += 1;
-      updateStepperDisplay();
-      render();
-    }
+    if (state.fontSize < 28) { state.fontSize += 1; updateStepperDisplay(); render(); }
   });
-
   document.getElementById('font-size-dec').addEventListener('click', () => {
-    if (state.fontSize > 14) {
-      state.fontSize -= 1;
-      updateStepperDisplay();
-      render();
-    }
+    if (state.fontSize > 14) { state.fontSize -= 1; updateStepperDisplay(); render(); }
   });
 
+  // Font size — slider
+  document.getElementById('font-size-slider').addEventListener('input', e => {
+    state.fontSize = parseInt(e.target.value, 10);
+    updateStepperDisplay();
+    render();
+  });
+
+  // Line height — stepper
   document.getElementById('line-height-inc').addEventListener('click', () => {
     if (state.lineHeight < 2.4) {
       state.lineHeight = Math.round((state.lineHeight + 0.1) * 10) / 10;
@@ -207,7 +234,6 @@ function init() {
       render();
     }
   });
-
   document.getElementById('line-height-dec').addEventListener('click', () => {
     if (state.lineHeight > 1.4) {
       state.lineHeight = Math.round((state.lineHeight - 0.1) * 10) / 10;
@@ -216,11 +242,18 @@ function init() {
     }
   });
 
+  // Line height — slider
+  document.getElementById('line-height-slider').addEventListener('input', e => {
+    state.lineHeight = Math.round(parseFloat(e.target.value) * 10) / 10;
+    updateStepperDisplay();
+    render();
+  });
+
+  // Color pickers
   document.getElementById('font-color').addEventListener('input', e => {
     state.fontColor = e.target.value;
     render();
   });
-
   document.getElementById('bg-color').addEventListener('input', e => {
     state.bgColor = e.target.value;
     render();
